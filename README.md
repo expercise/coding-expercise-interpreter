@@ -1,4 +1,4 @@
-# expercise-interpreter Project
+# Sandboxed Interpreter for expercise
 
 ## Interpreter Docker Image
 
