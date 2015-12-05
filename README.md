@@ -12,7 +12,7 @@ https://docs.docker.com/engine/installation/ubuntulinux/
 $ sudo docker build -t expercise/interpreter -f InterpreterDockerfile .
 ``
 
-### Step 3: Run Interpreter API on port 8080 (for example)
+### Step 3: Run Interpreter API manually on port 8080 (for example)
 
 ``
 $ sudo docker run -d -p 8080:4567 expercise/interpreter
