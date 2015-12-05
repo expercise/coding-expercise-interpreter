@@ -18,8 +18,8 @@ $ sudo docker build -t expercise/interpreter -f InterpreterDockerfile .
 $ sudo docker run -d -p 8080:4567 expercise/interpreter
 ``
 
-Run with memory constraint (128M):
+Run with memory constraint (128 MB):
 
 ``
-sudo docker run -m 128M -d -p 8080:4567 expercise/interpreter
+$ sudo docker run -m 128M -d -p 8080:4567 expercise/interpreter
 ``
