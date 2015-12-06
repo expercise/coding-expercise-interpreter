@@ -18,7 +18,7 @@ public final class OrchestratorApi {
     public static void main(String... args) {
         // TODO ufuk: get pool size from args
 
-        interpreterContainerOrchestrator.initializeContainerPool(3);
+        interpreterContainerOrchestrator.initializeContainerPool(10);
 
         startServer(args);
     }

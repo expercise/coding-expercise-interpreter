@@ -19,7 +19,7 @@ public final class DockerHelper {
 
     private static final String INTERPRETER_IMAGE_NAME = "expercise/interpreter";
 
-    private static final int SECONDS_TO_WAIT_BEFORE_KILLING = 13;
+    private static final int SECONDS_TO_WAIT_BEFORE_KILLING = 3;
 
     private static final int EXPOSED_PORT = 4567;
 
