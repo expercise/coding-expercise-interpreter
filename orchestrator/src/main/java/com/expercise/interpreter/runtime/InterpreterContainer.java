@@ -1,6 +1,8 @@
 package com.expercise.interpreter.runtime;
 
-public class InterpreterContainer {
+import java.util.Observable;
+
+public class InterpreterContainer extends Observable {
 
     private int hostPort;
 
@@ -9,6 +11,11 @@ public class InterpreterContainer {
     public InterpreterContainer(int hostPort, String containerId) {
         this.hostPort = hostPort;
         this.containerId = containerId;
+    }
+
+    public void reInitialize() {
+        setChanged();
+        notifyObservers();
     }
 
     public int getHostPort() {

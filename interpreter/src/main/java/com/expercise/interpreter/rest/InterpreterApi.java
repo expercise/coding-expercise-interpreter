@@ -14,8 +14,11 @@ import static spark.Spark.post;
 
 public final class InterpreterApi {
 
+    private final static SolutionValidationService solutionValidationService = new SolutionValidationService();
+
     public static void main(String... args) {
         setPortNumber(args);
+
         post(Constants.VALIDATION_ENDPOINT, (request, response) -> {
             response.type(HttpUtils.JSON_CONTENT_TYPE);
 
@@ -26,7 +29,7 @@ public final class InterpreterApi {
             challengeEvaluationContext.setProgrammingLanguage(solutionRequest.getProgrammingLanguage());
             challengeEvaluationContext.setSolution(solutionRequest.getSolution());
 
-            SolutionValidationService.getInstance().interpret(challengeEvaluationContext);
+            solutionValidationService.interpret(challengeEvaluationContext);
 
             ValidateSolutionResponse solutionResponse = new ValidateSolutionResponse();
             solutionResponse.setInterpreterResult(challengeEvaluationContext.getInterpreterResult());
