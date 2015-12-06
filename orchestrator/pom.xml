@@ -13,11 +13,21 @@
     <artifactId>orchestrator</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <docker.client.version>2.7.7</docker.client.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.expercise.interpreter</groupId>
             <artifactId>commons</artifactId>
             <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.spotify</groupId>
+            <artifactId>docker-client</artifactId>
+            <version>${docker.client.version}</version>
         </dependency>
     </dependencies>
 

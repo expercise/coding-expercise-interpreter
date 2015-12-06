@@ -10,7 +10,7 @@ import com.expercise.interpreter.core.model.challenge.TestCase;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class SolutionValidationService {
+public final class SolutionValidationService {
 
     private static final Map<ProgrammingLanguage, Interpreter> INTERPRETERS = new ConcurrentHashMap<>();
 
