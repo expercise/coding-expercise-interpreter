@@ -23,7 +23,7 @@ public final class DockerHelper {
 
     private static final int EXPOSED_PORT = 4567;
 
-    private static final Long MEMORY_CONSTRAINT = 128L * 1024 * 1024;
+    private static final Long MEMORY_CONSTRAINT = 128_000_000L;
 
     private static DockerClient docker;
 
@@ -35,26 +35,24 @@ public final class DockerHelper {
         }
     }
 
-    // TODO ufuk: memory constraint doesn't work
     // TODO ufuk: add other constraints (such as CPU, network, IO)
     public static String runNewContainer(int hostPort) {
         try {
-            // Create container with exposed ports
-            ContainerConfig containerConfig = ContainerConfig.builder()
-                    .image(INTERPRETER_IMAGE_NAME)
-                    .exposedPorts(new String[]{String.valueOf(EXPOSED_PORT)})
+            Map<String, List<PortBinding>> portBindings = new HashMap<>();
+            portBindings.put(String.valueOf(EXPOSED_PORT), Collections.singletonList(PortBinding.of("0.0.0.0", hostPort)));
+            HostConfig hostConfig = HostConfig.builder()
+                    .portBindings(portBindings)
                     .memory(MEMORY_CONSTRAINT)
                     .build();
 
+            ContainerConfig containerConfig = ContainerConfig.builder()
+                    .image(INTERPRETER_IMAGE_NAME)
+                    .exposedPorts(new String[]{String.valueOf(EXPOSED_PORT)})
+                    .hostConfig(hostConfig)
+                    .build();
+
             ContainerCreation containerCreation = docker.createContainer(containerConfig);
-
-            // Start container with port bindings
-            Map<String, List<PortBinding>> portBindings = new HashMap<>();
-            portBindings.put(String.valueOf(EXPOSED_PORT), Collections.singletonList(PortBinding.of("0.0.0.0", hostPort)));
-            HostConfig hostConfig = HostConfig.builder().portBindings(portBindings).build();
-
-            docker.startContainer(containerCreation.id(), hostConfig);
-
+            docker.startContainer(containerCreation.id());
             return containerCreation.id();
         } catch (Exception e) {
             e.printStackTrace();
