@@ -2,6 +2,7 @@ package com.expercise.interpreter.runtime;
 
 import com.expercise.interpreter.com.expercise.interpreter.rest.ValidateSolutionRequest;
 import com.expercise.interpreter.com.expercise.interpreter.rest.ValidateSolutionResponse;
+import com.expercise.interpreter.runtime.model.InterpreterContainer;
 import com.expercise.interpreter.util.HttpUtils;
 import com.expercise.interpreter.util.JsonUtils;
 import org.apache.commons.io.IOUtils;
@@ -13,8 +14,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.util.Observable;
 import java.util.Observer;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public final class InterpreterContainerOrchestrator implements Observer {
 
@@ -22,27 +23,25 @@ public final class InterpreterContainerOrchestrator implements Observer {
 
     private static final int INITIAL_HOST_PORT = 4568;
 
-    private BlockingQueue<InterpreterContainer> CONTAINER_POOL;
+    private final BlockingQueue<InterpreterContainer> containerPool = new LinkedBlockingQueue<>();
 
     private InterpreterContainerOrchestrator() {
     }
 
     public void initializeContainerPool(int poolSize) {
-        CONTAINER_POOL = new ArrayBlockingQueue<>(poolSize);
-
         for (int hostPort = INITIAL_HOST_PORT; hostPort < poolSize + INITIAL_HOST_PORT; hostPort++) {
             String containerId = DockerHelper.runNewContainer(hostPort);
 
             InterpreterContainer interpreterContainer = new InterpreterContainer(hostPort, containerId);
             interpreterContainer.addObserver(this);
-            CONTAINER_POOL.add(interpreterContainer);
+            containerPool.add(interpreterContainer);
         }
     }
 
     public ValidateSolutionResponse interpret(ValidateSolutionRequest validateSolutionRequest) {
         InterpreterContainer interpreterContainer = null;
         try {
-            interpreterContainer = CONTAINER_POOL.take();
+            interpreterContainer = containerPool.take();
 
             HttpClient client = HttpClientBuilder.create().build();
             HttpPost httpPost = new HttpPost("http://localhost:" + interpreterContainer.getHostPort() + "/validateSolution");
@@ -59,7 +58,7 @@ public final class InterpreterContainerOrchestrator implements Observer {
             e.printStackTrace();
         } finally {
             if (interpreterContainer != null) {
-                interpreterContainer.reInitialize();
+                interpreterContainer.notifyReInitializing();
             }
         }
         return null;
@@ -67,14 +66,14 @@ public final class InterpreterContainerOrchestrator implements Observer {
 
     @Override
     public void update(Observable observable, Object arg) {
-        InterpreterContainer oldInterpreterContainer = (InterpreterContainer) observable;
-        DockerHelper.destroyContainer(oldInterpreterContainer.getContainerId());
+        InterpreterContainer interpreterContainer = (InterpreterContainer) observable;
+        boolean reInitialized = (Boolean) arg;
 
-        String newContainerId = DockerHelper.runNewContainer(oldInterpreterContainer.getHostPort());
-
-        InterpreterContainer newInterpreterContainer = new InterpreterContainer(oldInterpreterContainer.getHostPort(), newContainerId);
-        newInterpreterContainer.addObserver(this);
-        CONTAINER_POOL.add(newInterpreterContainer);
+        if (reInitialized) {
+            containerPool.add(interpreterContainer);
+        } else {
+            InterpreterContainerReInitializer.INSTANCE.reInitialize(interpreterContainer);
+        }
     }
 
 }
