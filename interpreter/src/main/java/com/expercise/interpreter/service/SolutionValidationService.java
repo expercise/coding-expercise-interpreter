@@ -10,12 +10,13 @@ import com.expercise.interpreter.core.model.challenge.TestCase;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-// TODO ufuk: singleton
 public final class SolutionValidationService {
+
+    public static final SolutionValidationService INSTANCE = new SolutionValidationService();
 
     private static final Map<ProgrammingLanguage, Interpreter> INTERPRETERS = new ConcurrentHashMap<>();
 
-    public SolutionValidationService() {
+    private SolutionValidationService() {
         INTERPRETERS.put(ProgrammingLanguage.JavaScript, new JavaScriptInterpreter());
     }
 

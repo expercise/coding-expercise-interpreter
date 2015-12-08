@@ -16,12 +16,16 @@ import java.util.Observer;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-// TODO ufuk: singleton
 public final class InterpreterContainerOrchestrator implements Observer {
+
+    public static final InterpreterContainerOrchestrator INSTANCE = new InterpreterContainerOrchestrator();
 
     private static final int INITIAL_HOST_PORT = 4568;
 
     private BlockingQueue<InterpreterContainer> CONTAINER_POOL;
+
+    private InterpreterContainerOrchestrator() {
+    }
 
     public void initializeContainerPool(int poolSize) {
         CONTAINER_POOL = new ArrayBlockingQueue<>(poolSize);

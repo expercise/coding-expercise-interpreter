@@ -13,12 +13,12 @@ import static spark.Spark.post;
 
 public final class OrchestratorApi {
 
-    private static InterpreterContainerOrchestrator interpreterContainerOrchestrator = new InterpreterContainerOrchestrator();
+    private static InterpreterContainerOrchestrator orchestrator = InterpreterContainerOrchestrator.INSTANCE;
 
     public static void main(String... args) {
         // TODO ufuk: get pool size from args
 
-        interpreterContainerOrchestrator.initializeContainerPool(10);
+        orchestrator.initializeContainerPool(10);
 
         startServer(args);
     }
@@ -31,7 +31,7 @@ public final class OrchestratorApi {
 
             ValidateSolutionRequest solutionRequest = JsonUtils.fromJsonString(request.body(), ValidateSolutionRequest.class);
 
-            ValidateSolutionResponse solutionResponse = interpreterContainerOrchestrator.interpret(solutionRequest);
+            ValidateSolutionResponse solutionResponse = orchestrator.interpret(solutionRequest);
 
             return JsonUtils.toJsonString(solutionResponse);
         });

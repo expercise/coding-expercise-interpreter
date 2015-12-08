@@ -14,8 +14,6 @@ import static spark.Spark.post;
 
 public final class InterpreterApi {
 
-    private final static SolutionValidationService solutionValidationService = new SolutionValidationService();
-
     public static void main(String... args) {
         setPortNumber(args);
 
@@ -29,7 +27,7 @@ public final class InterpreterApi {
             challengeEvaluationContext.setProgrammingLanguage(solutionRequest.getProgrammingLanguage());
             challengeEvaluationContext.setSolution(solutionRequest.getSolution());
 
-            solutionValidationService.interpret(challengeEvaluationContext);
+            SolutionValidationService.INSTANCE.interpret(challengeEvaluationContext);
 
             ValidateSolutionResponse solutionResponse = new ValidateSolutionResponse();
             solutionResponse.setInterpreterResult(challengeEvaluationContext.getInterpreterResult());
