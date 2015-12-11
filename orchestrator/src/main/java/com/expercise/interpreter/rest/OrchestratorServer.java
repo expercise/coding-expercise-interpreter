@@ -7,7 +7,6 @@ import com.expercise.interpreter.runtime.InterpreterContainerOrchestrator;
 import com.expercise.interpreter.util.HttpUtils;
 import com.expercise.interpreter.util.JsonUtils;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
@@ -23,8 +22,6 @@ public final class OrchestratorServer extends AbstractVerticle {
 
     @Override
     public void start() throws Exception {
-        vertx = Vertx.vertx();
-
         Router router = Router.router(vertx);
         router.route(Constants.VALIDATION_ENDPOINT).handler(BodyHandler.create());
         router.post(Constants.VALIDATION_ENDPOINT).handler(routingContext -> {
