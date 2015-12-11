@@ -8,10 +8,7 @@ import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.HostConfig;
 import com.spotify.docker.client.messages.PortBinding;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class DockerHelper {
 
@@ -25,9 +22,9 @@ public final class DockerHelper {
 
     private static final Long MEMORY_CONSTRAINT = 128_000_000L;
 
-    private static DockerClient docker;
+    private DockerClient docker;
 
-    static {
+    public DockerHelper() {
         try {
             docker = DefaultDockerClient.fromEnv().build();
         } catch (DockerCertificateException e) {
@@ -36,7 +33,7 @@ public final class DockerHelper {
     }
 
     // TODO ufuk: add other constraints (such as CPU, network, IO)
-    public static String runNewContainer(int hostPort) {
+    public String runNewInterpreterContainer(int hostPort) {
         try {
             Map<String, List<PortBinding>> portBindings = new HashMap<>();
             portBindings.put(String.valueOf(EXPOSED_PORT), Collections.singletonList(PortBinding.of("0.0.0.0", hostPort)));
@@ -49,6 +46,13 @@ public final class DockerHelper {
                     .image(INTERPRETER_IMAGE_NAME)
                     .exposedPorts(new String[]{String.valueOf(EXPOSED_PORT)})
                     .hostConfig(hostConfig)
+                    .cmd(Arrays.asList(
+                            "/usr/lib/jvm/java-8-openjdk-amd64/bin/java",
+                            "-Xms16m",
+                            "-Xmx64m",
+                            "-jar",
+                            "/code/interpreter/target/interpreter-1.0-jar-with-dependencies.jar"
+                    ))
                     .build();
 
             ContainerCreation containerCreation = docker.createContainer(containerConfig);
@@ -60,7 +64,7 @@ public final class DockerHelper {
         }
     }
 
-    public static void destroyContainer(String containerId) {
+    public void destroyContainer(String containerId) {
         try {
             docker.stopContainer(containerId, SECONDS_TO_WAIT_BEFORE_KILLING);
             docker.removeContainer(containerId);

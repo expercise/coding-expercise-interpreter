@@ -4,6 +4,7 @@ target
 .settings
 *.iml
 .idea
+.vertx
 .DS_Store
 .metadata
 .externalToolBuilders
@@ -12,3 +13,4 @@ target
 environmentSpecific.properties
 expercise.min*.css
 /overlays/
+file-uploads

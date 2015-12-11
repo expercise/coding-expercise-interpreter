@@ -9,11 +9,12 @@ public final class InterpreterContainerReInitializer {
 
     // TODO ufuk: log and handle the exceptions
 
-    public static final InterpreterContainerReInitializer INSTANCE = new InterpreterContainerReInitializer();
-
     private final BlockingQueue<InterpreterContainer> containerGarbage = new LinkedBlockingQueue<>();
 
-    private InterpreterContainerReInitializer() {
+    private final DockerHelper dockerHelper;
+
+    public InterpreterContainerReInitializer(DockerHelper dockerHelper) {
+        this.dockerHelper = dockerHelper;
         startReInitializingEventLoop();
     }
 
@@ -30,18 +31,10 @@ public final class InterpreterContainerReInitializer {
             while (true) {
                 try {
                     InterpreterContainer interpreterContainer = containerGarbage.take();
-                    DockerHelper.destroyContainer(interpreterContainer.getContainerId());
-                    String newContainerId = DockerHelper.runNewContainer(interpreterContainer.getHostPort());
+                    dockerHelper.destroyContainer(interpreterContainer.getContainerId());
+                    String newContainerId = dockerHelper.runNewInterpreterContainer(interpreterContainer.getHostPort());
                     interpreterContainer.setContainerId(newContainerId);
-
-                    new Thread(() -> {
-                        try {
-                            Thread.sleep(1000); // Wait for initializing interpreter api
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                        interpreterContainer.notifyReInitialized();
-                    }, "Thread-Wait-And-Notify-" + interpreterContainer.getHostPort()).start();
+                    interpreterContainer.notifyReInitialized();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

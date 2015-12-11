@@ -12,11 +12,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class SolutionValidationService {
 
-    public static final SolutionValidationService INSTANCE = new SolutionValidationService();
+    private final Map<ProgrammingLanguage, Interpreter> INTERPRETERS = new ConcurrentHashMap<>();
 
-    private static final Map<ProgrammingLanguage, Interpreter> INTERPRETERS = new ConcurrentHashMap<>();
-
-    private SolutionValidationService() {
+    public SolutionValidationService() {
         INTERPRETERS.put(ProgrammingLanguage.JavaScript, new JavaScriptInterpreter());
     }
 

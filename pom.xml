@@ -28,8 +28,11 @@
         <hamcrest.version>1.3</hamcrest.version>
 
         <!-- Web -->
-        <spark.version>2.3</spark.version>
+        <vertx.version>3.1.0</vertx.version>
         <jackson.version>2.6.3</jackson.version>
+
+        <!-- Logging -->
+        <slf4j.version>1.7.13</slf4j.version>
 
         <!-- Utils -->
         <http.client.version>4.5.1</http.client.version>
@@ -74,11 +77,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Spark Web Framework -->
+        <!-- Vert.x -->
         <dependency>
-            <groupId>com.sparkjava</groupId>
-            <artifactId>spark-core</artifactId>
-            <version>${spark.version}</version>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-web</artifactId>
+            <version>${vertx.version}</version>
         </dependency>
 
         <!-- Jackson -->
@@ -92,6 +95,14 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
+        </dependency>
+
+        <!-- Logging -->
+        <!-- TODO ufuk: configure logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <!-- Utils -->

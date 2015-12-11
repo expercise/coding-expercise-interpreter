@@ -19,18 +19,22 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public final class InterpreterContainerOrchestrator implements Observer {
 
-    public static final InterpreterContainerOrchestrator INSTANCE = new InterpreterContainerOrchestrator();
-
     private static final int INITIAL_HOST_PORT = 4568;
 
     private final BlockingQueue<InterpreterContainer> containerPool = new LinkedBlockingQueue<>();
 
-    private InterpreterContainerOrchestrator() {
+    private final DockerHelper dockerHelper;
+
+    private final InterpreterContainerReInitializer interpreterContainerReInitializer;
+
+    public InterpreterContainerOrchestrator() {
+        this.dockerHelper = new DockerHelper();
+        this.interpreterContainerReInitializer = new InterpreterContainerReInitializer(dockerHelper);
     }
 
     public void initializeContainerPool(int poolSize) {
         for (int hostPort = INITIAL_HOST_PORT; hostPort < poolSize + INITIAL_HOST_PORT; hostPort++) {
-            String containerId = DockerHelper.runNewContainer(hostPort);
+            String containerId = dockerHelper.runNewInterpreterContainer(hostPort);
 
             InterpreterContainer interpreterContainer = new InterpreterContainer(hostPort, containerId);
             interpreterContainer.addObserver(this);
@@ -72,7 +76,7 @@ public final class InterpreterContainerOrchestrator implements Observer {
         if (reInitialized) {
             containerPool.add(interpreterContainer);
         } else {
-            InterpreterContainerReInitializer.INSTANCE.reInitialize(interpreterContainer);
+            interpreterContainerReInitializer.reInitialize(interpreterContainer);
         }
     }
 

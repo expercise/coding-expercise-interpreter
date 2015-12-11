@@ -35,7 +35,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.expercise.interpreter.rest.InterpreterApi</mainClass>
+                            <mainClass>com.expercise.interpreter.rest.InterpreterMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

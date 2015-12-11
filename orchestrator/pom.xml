@@ -45,7 +45,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.expercise.interpreter.rest.OrchestratorApi</mainClass>
+                            <mainClass>com.expercise.interpreter.rest.OrchestratorMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

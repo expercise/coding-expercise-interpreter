@@ -26,18 +26,19 @@ import java.util.Arrays;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.*;
-import static spark.Spark.stop;
 
-public class InterpreterApiTest {
+public class InterpreterServerTest {
+
+    private static final InterpreterServer SERVER = new InterpreterServer();
 
     @BeforeClass
-    public static void startServer() {
-        InterpreterApi.main();
+    public static void startServer() throws Exception {
+        SERVER.start();
     }
 
     @AfterClass
-    public static void stopServer() {
-        stop();
+    public static void stopServer() throws Exception {
+        SERVER.stop();
     }
 
     @Test
@@ -119,9 +120,9 @@ public class InterpreterApiTest {
     private HttpResponse executeRequest(ValidateSolutionRequest request) throws IOException {
         HttpClient client = HttpClientBuilder.create().build();
         HttpPost httpPost = new HttpPost("http://localhost:4567/validateSolution");
-        httpPost.setEntity(new StringEntity(JsonUtils.toJsonString(request)));
         httpPost.setHeader("Accept", HttpUtils.JSON_CONTENT_TYPE);
-        httpPost.setHeader("Content-type", HttpUtils.JSON_CONTENT_TYPE);
+        httpPost.setHeader("Content-Type", HttpUtils.JSON_CONTENT_TYPE);
+        httpPost.setEntity(new StringEntity(JsonUtils.toJsonString(request)));
 
         return client.execute(httpPost);
     }

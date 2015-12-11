@@ -16,6 +16,3 @@ RUN ["mvn", "clean", "install"]
 WORKDIR /code/interpreter
 
 RUN ["mvn", "assembly:assembly"]
-
-EXPOSE 4567
-CMD ["/usr/lib/jvm/java-8-openjdk-amd64/bin/java", "-jar", "/code/interpreter/target/interpreter-1.0-jar-with-dependencies.jar"]
