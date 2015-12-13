@@ -1,5 +1,5 @@
 # Sandboxed Interpreter for expercise
-**P.S. README is outdated, will be updated soon!**
+<font color="red">P.S. README is outdated, will be updated soon!</font>
 
 ## Interpreter Docker Image
 
