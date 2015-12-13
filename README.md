@@ -1,4 +1,5 @@
 # Sandboxed Interpreter for expercise
+**P.S. README is outdated, will be updated soon!**
 
 ## Interpreter Docker Image
 
