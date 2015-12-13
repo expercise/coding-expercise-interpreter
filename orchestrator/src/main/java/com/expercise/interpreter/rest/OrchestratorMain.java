@@ -1,6 +1,7 @@
 package com.expercise.interpreter.rest;
 
-import io.vertx.core.Verticle;
+import com.expercise.interpreter.runtime.InterpreterContainerInitializer;
+import com.expercise.interpreter.runtime.model.InterpreterContainerMessageCodec;
 import io.vertx.core.Vertx;
 
 public final class OrchestratorMain {
@@ -10,8 +11,11 @@ public final class OrchestratorMain {
         int poolSize = 10;
 
         Vertx vertx = Vertx.vertx();
-        Verticle orchestratorServer = new OrchestratorServer(poolSize);
-        vertx.deployVerticle(orchestratorServer);
+        vertx.eventBus().registerCodec(new InterpreterContainerMessageCodec());
+
+        vertx.deployVerticle(new InterpreterContainerInitializer(
+                event -> vertx.deployVerticle(new OrchestratorServer(poolSize))
+        ));
     }
 
 }

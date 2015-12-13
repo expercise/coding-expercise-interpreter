@@ -10,6 +10,7 @@ import com.expercise.interpreter.core.model.challenge.ProgrammingLanguage;
 import com.expercise.interpreter.core.model.challenge.TestCase;
 import com.expercise.interpreter.util.HttpUtils;
 import com.expercise.interpreter.util.JsonUtils;
+import io.vertx.core.Vertx;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -29,16 +30,16 @@ import static org.junit.Assert.*;
 
 public class InterpreterServerTest {
 
-    private static final InterpreterServer SERVER = new InterpreterServer();
+    private static final InterpreterServer INTERPRETER_SERVER = new InterpreterServer();
 
     @BeforeClass
     public static void startServer() throws Exception {
-        SERVER.start();
+        Vertx.vertx().deployVerticle(INTERPRETER_SERVER);
     }
 
     @AfterClass
     public static void stopServer() throws Exception {
-        SERVER.stop();
+        INTERPRETER_SERVER.stop();
     }
 
     @Test

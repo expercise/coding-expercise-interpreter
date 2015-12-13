@@ -22,14 +22,23 @@ public final class DockerHelper {
 
     private static final Long MEMORY_CONSTRAINT = 128_000_000L;
 
+    private static DockerHelper instance;
+
     private DockerClient docker;
 
-    public DockerHelper() {
+    private DockerHelper() {
         try {
             docker = DefaultDockerClient.fromEnv().build();
-        } catch (DockerCertificateException e) {
-            e.printStackTrace();
+        } catch (DockerCertificateException ignored) {
+            ignored.printStackTrace();
         }
+    }
+
+    public static synchronized DockerHelper getInstance() {
+        if (instance == null) {
+            instance = new DockerHelper();
+        }
+        return instance;
     }
 
     // TODO ufuk: add other constraints (such as CPU, network, IO)
@@ -51,15 +60,16 @@ public final class DockerHelper {
                             "-Xms16m",
                             "-Xmx64m",
                             "-jar",
-                            "/code/interpreter/target/interpreter-1.0-jar-with-dependencies.jar"
+                            "/code/interpreter/target/interpreter-1.0-jar-with-dependencies.jar",
+                            String.valueOf(hostPort)
                     ))
                     .build();
 
             ContainerCreation containerCreation = docker.createContainer(containerConfig);
             docker.startContainer(containerCreation.id());
             return containerCreation.id();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
             return null;
         }
     }
@@ -68,8 +78,8 @@ public final class DockerHelper {
         try {
             docker.stopContainer(containerId, SECONDS_TO_WAIT_BEFORE_KILLING);
             docker.removeContainer(containerId);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ignored) {
+            ignored.printStackTrace();
         }
     }
 
