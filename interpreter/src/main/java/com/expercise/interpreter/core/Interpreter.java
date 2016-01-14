@@ -7,6 +7,7 @@ import java.util.concurrent.*;
 public abstract class Interpreter {
 
     private static final int TIME = 10;
+
     private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
 
     protected abstract void interpretInternal(ChallengeEvaluationContext context) throws InterpreterException;

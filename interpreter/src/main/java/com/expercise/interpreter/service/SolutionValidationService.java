@@ -1,11 +1,13 @@
 package com.expercise.interpreter.service;
 
 import com.expercise.interpreter.core.Interpreter;
+import com.expercise.interpreter.core.java.JavaInterpreter;
 import com.expercise.interpreter.core.javascript.JavaScriptInterpreter;
 import com.expercise.interpreter.core.model.ChallengeEvaluationContext;
 import com.expercise.interpreter.core.model.TestCaseWithResult;
 import com.expercise.interpreter.core.model.challenge.ProgrammingLanguage;
 import com.expercise.interpreter.core.model.challenge.TestCase;
+import com.expercise.interpreter.core.python.PythonInterpreter;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,6 +18,8 @@ public final class SolutionValidationService {
 
     public SolutionValidationService() {
         INTERPRETERS.put(ProgrammingLanguage.JavaScript, new JavaScriptInterpreter());
+        INTERPRETERS.put(ProgrammingLanguage.Java, new JavaInterpreter());
+        INTERPRETERS.put(ProgrammingLanguage.Python, new PythonInterpreter());
     }
 
     public void interpret(ChallengeEvaluationContext context) {

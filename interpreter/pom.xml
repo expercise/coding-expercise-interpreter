@@ -13,11 +13,21 @@
     <artifactId>interpreter</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <jython.version>2.7.0</jython.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.expercise.interpreter</groupId>
             <artifactId>commons</artifactId>
             <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.python</groupId>
+            <artifactId>jython</artifactId>
+            <version>${jython.version}</version>
         </dependency>
     </dependencies>
 
