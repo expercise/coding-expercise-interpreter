@@ -16,8 +16,6 @@ public final class DockerHelper {
 
     private static final String INTERPRETER_IMAGE_NAME = "expercise/interpreter";
 
-    private static final int SECONDS_TO_WAIT_BEFORE_KILLING = 3;
-
     private static final int EXPOSED_PORT = 4567;
 
     private static final Long MEMORY_CONSTRAINT = 128_000_000L;
@@ -76,7 +74,7 @@ public final class DockerHelper {
 
     public void destroyContainer(String containerId) {
         try {
-            docker.stopContainer(containerId, SECONDS_TO_WAIT_BEFORE_KILLING);
+            docker.killContainer(containerId);
             docker.removeContainer(containerId);
         } catch (Exception ignored) {
             ignored.printStackTrace();
