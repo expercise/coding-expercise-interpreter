@@ -10,7 +10,5 @@ target
 .externalToolBuilders
 .cache
 .springBeans
-environmentSpecific.properties
-expercise.min*.css
 /overlays/
 file-uploads
