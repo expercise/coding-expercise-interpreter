@@ -9,6 +9,14 @@ public class TestCase {
 
     private String output;
 
+    public TestCase() {
+    }
+
+    public TestCase(List<String> inputs, String output) {
+        this.inputs = inputs;
+        this.output = output;
+    }
+
     public List<String> getInputs() {
         return inputs;
     }

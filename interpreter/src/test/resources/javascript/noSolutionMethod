@@ -1,0 +1,3 @@
+function someAnotherMethod(a) {
+    return a;
+}

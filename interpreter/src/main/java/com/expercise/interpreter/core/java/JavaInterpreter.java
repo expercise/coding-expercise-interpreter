@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+// TODO ufuk: needs fix for in memory java compiler
 public class JavaInterpreter extends Interpreter {
 
     private static final Map<DataType, Class<?>> TYPE_MAP = new HashMap<>();

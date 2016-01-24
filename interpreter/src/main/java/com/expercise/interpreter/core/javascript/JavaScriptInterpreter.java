@@ -3,7 +3,6 @@ package com.expercise.interpreter.core.javascript;
 import com.expercise.interpreter.core.Interpreter;
 import com.expercise.interpreter.core.InterpreterException;
 import com.expercise.interpreter.core.InterpreterResult;
-import com.expercise.interpreter.core.TypeChecker;
 import com.expercise.interpreter.core.model.ChallengeEvaluationContext;
 import com.expercise.interpreter.core.model.TestCaseResult;
 import com.expercise.interpreter.core.model.TestCaseWithResult;
@@ -23,17 +22,23 @@ public class JavaScriptInterpreter extends Interpreter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JavaScriptInterpreter.class);
 
+    private final ScriptEngine JAVASCRIPT_ENGINE;
+
+    public JavaScriptInterpreter() {
+        NashornScriptEngine javaScriptEngine = (NashornScriptEngine) new NashornScriptEngineFactory().getScriptEngine("-strict", "--no-java", "--no-syntax-extensions");
+        javaScriptEngine.put(ScriptEngine.FILENAME, "solution.js");
+        this.JAVASCRIPT_ENGINE = javaScriptEngine;
+    }
+
     @Override
     protected void interpretInternal(ChallengeEvaluationContext context) throws InterpreterException {
-        ScriptEngine javaScriptEngine = getScriptEngine();
-
-        evaluateSourceCode(context.getSolution(), javaScriptEngine);
+        evaluateSourceCode(context.getSolution(), JAVASCRIPT_ENGINE);
 
         Challenge challenge = context.getChallenge();
 
         for (TestCaseWithResult eachTestCaseWithResult : context.getTestCaseWithResults()) {
             TestCase eachTestCase = eachTestCaseWithResult.getTestCase();
-            Object resultValue = makeFunctionCallAndGetResultValue(javaScriptEngine, challenge, eachTestCase);
+            Object resultValue = makeFunctionCallAndGetResultValue(JAVASCRIPT_ENGINE, challenge, eachTestCase);
             typeCheck(resultValue, challenge.getOutputType());
             processTestCase(eachTestCaseWithResult, resultValue, challenge.getOutputType());
         }
@@ -41,23 +46,11 @@ public class JavaScriptInterpreter extends Interpreter {
         context.decideInterpreterResult();
     }
 
-    private void typeCheck(Object resultValue, DataType outputType) throws InterpreterException {
-        if (!TypeChecker.check(resultValue, outputType)) {
-            throw new InterpreterException(InterpreterResult.typeErrorFailedResult());
-        }
-    }
-
-    private ScriptEngine getScriptEngine() {
-        NashornScriptEngine javaScriptEngine = (NashornScriptEngine) new NashornScriptEngineFactory().getScriptEngine("-strict", "--no-java", "--no-syntax-extensions");
-        javaScriptEngine.put(ScriptEngine.FILENAME, "solution.js");
-        return javaScriptEngine;
-    }
-
     private void evaluateSourceCode(String sourceCode, ScriptEngine javaScriptEngine) throws InterpreterException {
         try {
             javaScriptEngine.eval(sourceCode);
         } catch (ScriptException e) {
-            LOGGER.debug("Exception while evaluation", e);
+            LOGGER.debug("Exception while evaluation: ", e);
             throw new InterpreterException(InterpreterResult.syntaxErrorFailedResult());
         }
     }
@@ -69,8 +62,8 @@ public class JavaScriptInterpreter extends Interpreter {
             Object[] convertedInputValues = challenge.getConvertedInputValues(testCase.getInputs()).toArray();
             evaluationResult = ((Invocable) javaScriptEngine).invokeFunction("solution", convertedInputValues);
         } catch (Exception e) {
-            LOGGER.debug("Exception while interpreting", e);
-            throw new InterpreterException(InterpreterResult.createFailedResult());
+            LOGGER.debug("Exception while interpreting: ", e);
+            throw new InterpreterException(InterpreterResult.noResultFailedResult());
         }
 
         if (evaluationResult == null) {
@@ -85,7 +78,7 @@ public class JavaScriptInterpreter extends Interpreter {
 
         if (outputType == DataType.Integer) {
             int evaluationResultAsInteger = ((Number) resultValue).intValue();
-            int expectedValue = ((Number) Double.parseDouble(testCaseWithResult.getTestCase().getOutput())).intValue();
+            int expectedValue = ((int) Double.parseDouble(testCaseWithResult.getTestCase().getOutput()));
             testCaseResult = evaluationResultAsInteger == expectedValue ? TestCaseResult.PASSED : TestCaseResult.FAILED;
             testCaseWithResult.setActualValue(String.valueOf(evaluationResultAsInteger));
         } else if (outputType == DataType.Text) {

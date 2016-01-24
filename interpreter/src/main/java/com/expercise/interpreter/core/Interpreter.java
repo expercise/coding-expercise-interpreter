@@ -1,6 +1,7 @@
 package com.expercise.interpreter.core;
 
 import com.expercise.interpreter.core.model.ChallengeEvaluationContext;
+import com.expercise.interpreter.core.model.challenge.DataType;
 
 import java.util.concurrent.*;
 
@@ -30,6 +31,12 @@ public abstract class Interpreter {
             }
         } finally {
             executor.shutdownNow();
+        }
+    }
+
+    protected void typeCheck(Object resultValue, DataType outputType) throws InterpreterException {
+        if (!TypeChecker.check(resultValue, outputType)) {
+            throw new InterpreterException(InterpreterResult.typeErrorFailedResult());
         }
     }
 

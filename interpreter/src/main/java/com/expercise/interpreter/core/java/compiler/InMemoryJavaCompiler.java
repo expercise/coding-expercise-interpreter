@@ -63,7 +63,7 @@ public final class InMemoryJavaCompiler {
 
             result = method.invoke(instance, args);
         } catch (Exception e) {
-            LOGGER.debug("Exception while invoking the method \"{}\": ", methodName, e);
+            LOGGER.debug(String.format("Exception while invoking the method \"%s\": ", methodName), e);
         }
 
         return result;
@@ -73,7 +73,7 @@ public final class InMemoryJavaCompiler {
         try {
             FileUtils.deleteDirectory(new File(classesPath));
         } catch (IOException e) {
-            LOGGER.debug("Exception while cleaning directory \"{}\": ", classesPath, e);
+            LOGGER.debug(String.format("Exception while cleaning directory \"%s\": ", classesPath), e);
         }
     }
 

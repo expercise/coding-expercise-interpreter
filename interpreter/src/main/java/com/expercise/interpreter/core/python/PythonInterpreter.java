@@ -4,6 +4,8 @@ import com.expercise.interpreter.core.Interpreter;
 import com.expercise.interpreter.core.InterpreterException;
 import com.expercise.interpreter.core.InterpreterResult;
 import com.expercise.interpreter.core.model.ChallengeEvaluationContext;
+import com.expercise.interpreter.core.model.TestCaseResult;
+import com.expercise.interpreter.core.model.TestCaseWithResult;
 import com.expercise.interpreter.core.model.challenge.Challenge;
 import com.expercise.interpreter.core.model.challenge.DataType;
 import com.expercise.interpreter.core.model.challenge.TestCase;
@@ -27,36 +29,46 @@ public class PythonInterpreter extends Interpreter {
         TYPE_MAP.put(DataType.Text, PyString.class);
     }
 
+    private final org.python.util.PythonInterpreter PYTHON_INTERPRETER;
+
     public PythonInterpreter() {
         System.setProperty("python.import.site", "false");
+        PYTHON_INTERPRETER = new org.python.util.PythonInterpreter();
     }
 
     @Override
     protected void interpretInternal(ChallengeEvaluationContext context) throws InterpreterException {
-        org.python.util.PythonInterpreter pythonInterpreter = new org.python.util.PythonInterpreter();
+        executeSourceCode(PYTHON_INTERPRETER, context.getSolution());
 
-        executeSourceCode(pythonInterpreter, context.getSolution());
-
-        PyFunction solutionFunctionToCall = getSolutionFunctionToCall(pythonInterpreter);
+        PyFunction solutionFunctionToCall = getSolutionFunctionToCall(PYTHON_INTERPRETER);
 
         Challenge challenge = context.getChallenge();
-        for (TestCase testCase : challenge.getTestCases()) {
-            Object resultValue = makeFunctionCallAndGetResultValue(solutionFunctionToCall, challenge, testCase);
 
-            if (!challenge.getOutputType().convert(testCase.getOutput()).equals(resultValue)) {
-                context.setInterpreterResult(InterpreterResult.createFailedResult());
-                return;
-            }
+        for (TestCaseWithResult eachTestCaseWithResult : context.getTestCaseWithResults()) {
+            TestCase eachTestCase = eachTestCaseWithResult.getTestCase();
+            Object resultValue = makeFunctionCallAndGetResultValue(solutionFunctionToCall, challenge, eachTestCase);
+            processTestCase(challenge, eachTestCaseWithResult, resultValue);
         }
 
-        context.setInterpreterResult(InterpreterResult.createSuccessResult());
+        context.decideInterpreterResult();
+    }
+
+    private void processTestCase(Challenge challenge, TestCaseWithResult eachTestCaseWithResult, Object resultValue) {
+        TestCase eachTestCase = eachTestCaseWithResult.getTestCase();
+        if (!challenge.getOutputType().convert(eachTestCase.getOutput()).equals(resultValue)) {
+            eachTestCaseWithResult.setTestCaseResult(TestCaseResult.FAILED);
+            eachTestCaseWithResult.setActualValue(resultValue.toString());
+        } else {
+            eachTestCaseWithResult.setTestCaseResult(TestCaseResult.PASSED);
+            eachTestCaseWithResult.setActualValue(resultValue.toString());
+        }
     }
 
     private void executeSourceCode(org.python.util.PythonInterpreter pythonInterpreter, String sourceCode) throws InterpreterException {
         try {
             pythonInterpreter.exec(sourceCode);
         } catch (PySyntaxError e) {
-            LOGGER.debug("Syntax error", e);
+            LOGGER.debug("Syntax error: ", e);
             throw new InterpreterException(InterpreterResult.syntaxErrorFailedResult());
         }
     }
@@ -81,14 +93,23 @@ public class PythonInterpreter extends Interpreter {
         try {
             PyObject resultAsPyObject = solutionFunctionToCall.__call__(getArgumentsAsPyObjects(challenge, testCase));
             Class<? extends PyObject> outputType = TYPE_MAP.get(challenge.getOutputType());
+
+            if ("NoneType".equals(resultAsPyObject.getType().getName())) {
+                throw new InterpreterException(InterpreterResult.noResultFailedResult());
+            }
+
             if (outputType.isAssignableFrom(PyInteger.class)) {
                 resultAsJavaObject = resultAsPyObject.asInt();
             } else if (outputType.isAssignableFrom(PyString.class)) {
                 resultAsJavaObject = resultAsPyObject.asString();
             }
         } catch (PyException e) {
-            LOGGER.debug("Exception while function call", e);
-            throw new InterpreterException(InterpreterResult.createFailedResult());
+            LOGGER.debug("Exception while function call: ", e);
+            if ("TypeError".equals(((PyType) e.type).getName())) {
+                throw new InterpreterException(InterpreterResult.typeErrorFailedResult());
+            } else {
+                throw new InterpreterException(InterpreterResult.noResultFailedResult());
+            }
         }
 
         return resultAsJavaObject;
@@ -110,7 +131,7 @@ public class PythonInterpreter extends Interpreter {
                 Constructor<? extends PyObject> declaredConstructor = instanceType.getDeclaredConstructor(clazz);
                 pyObjects[i] = declaredConstructor.newInstance(type.convert(testCase.getInputs().get(i)));
             } catch (Exception e) {
-                LOGGER.debug("Exception while preparing arguments", e);
+                LOGGER.debug("Exception while preparing arguments: ", e);
                 throw new InterpreterException(InterpreterResult.noResultFailedResult());
             }
         }
