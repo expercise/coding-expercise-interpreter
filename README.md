@@ -1,4 +1,4 @@
 coding-expercise-interpreter
 =====================
 
-Sandboxed Interpreter for expercise.
+Sandboxed Interpreter for http://coding.expercise.com
