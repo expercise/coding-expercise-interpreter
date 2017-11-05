@@ -1,3 +1,0 @@
-function solution(a) {
-    return Java.type("java.lang.Math").pow(a, 2);
-}

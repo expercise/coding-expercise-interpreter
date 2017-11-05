@@ -1,7 +1,0 @@
-public class Solution {
-
-    public int solution(Integer a, Integer b) {
-        /* missing return statement */
-    }
-
-}
