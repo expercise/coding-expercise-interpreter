@@ -2,8 +2,8 @@ package com.expercise.interpreterapi.docker;
 
 import com.expercise.interpreterapi.exception.InterpreterException;
 import com.expercise.interpreterapi.request.InterpretRequest;
-import com.expercise.interpreterapi.request.InterpretResponse;
-import com.expercise.interpreterapi.request.ProgrammingLanguage;
+import com.expercise.interpreterapi.response.InterpretResponse;
+import com.expercise.interpreterapi.model.ProgrammingLanguage;
 import com.expercise.interpreterapi.storage.FileService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;

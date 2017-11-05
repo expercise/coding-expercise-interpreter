@@ -1,7 +1,7 @@
 package com.expercise.interpreterapi.docker;
 
-import com.expercise.interpreterapi.request.InterpretResponse;
-import com.expercise.interpreterapi.request.ProgrammingLanguage;
+import com.expercise.interpreterapi.response.InterpretResponse;
+import com.expercise.interpreterapi.model.ProgrammingLanguage;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.LogStream;
 import com.spotify.docker.client.exceptions.DockerCertificateException;

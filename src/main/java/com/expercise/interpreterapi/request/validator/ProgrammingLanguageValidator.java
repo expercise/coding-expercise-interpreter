@@ -1,6 +1,6 @@
 package com.expercise.interpreterapi.request.validator;
 
-import com.expercise.interpreterapi.request.ProgrammingLanguage;
+import com.expercise.interpreterapi.model.ProgrammingLanguage;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

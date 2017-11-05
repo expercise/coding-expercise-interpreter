@@ -1,4 +1,4 @@
-package com.expercise.interpreterapi.request;
+package com.expercise.interpreterapi.response;
 
 public class InterpretResponse extends BaseResponse {
 

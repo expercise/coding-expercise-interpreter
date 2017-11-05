@@ -1,4 +1,4 @@
-package com.expercise.interpreterapi.request;
+package com.expercise.interpreterapi.model;
 
 public enum ProgrammingLanguage {
 
