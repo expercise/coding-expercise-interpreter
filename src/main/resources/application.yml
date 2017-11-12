@@ -1,3 +1,10 @@
 spring:
   application:
     name: Expercise Interpreter API
+
+server:
+  port: 9119
+
+swagger:
+  host:
+    url: localhost:9119
