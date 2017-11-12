@@ -9,6 +9,9 @@ import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.HostConfig;
+import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -18,7 +21,8 @@ public abstract class DockerService {
     protected static final int STDOUT_BYTE_LIMIT = 1024;
     protected static final int STDERR_BYTE_LIMIT = 1024;
 
-    private static final Long MEMORY_CONSTRAINT = 4 * 1024 * 1024L;
+    private static final Logger LOGGER = LoggerFactory.getLogger(DockerService.class);
+    private static final Long MEMORY_CONSTRAINT = 64 * 1024 * 1024L;
 
     protected final DockerClient docker;
 
@@ -63,6 +67,9 @@ public abstract class DockerService {
         try {
             ContainerCreation cc = docker.createContainer(containerConfig);
             docker.startContainer(cc.id());
+            if (CollectionUtils.isNotEmpty(cc.warnings())) {
+                cc.warnings().forEach(LOGGER::warn);
+            }
             return cc;
         } catch (DockerException | InterruptedException e) {
             throw new InterpreterException("Interpreter exception occurred while container starting.", e);
