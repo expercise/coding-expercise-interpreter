@@ -1,4 +1,4 @@
-package com.expercise.interpreterapi.controller;
+package com.expercise.interpreterapi;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

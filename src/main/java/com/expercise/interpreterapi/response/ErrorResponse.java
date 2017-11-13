@@ -1,6 +1,6 @@
 package com.expercise.interpreterapi.response;
 
-public class BaseResponse {
+public class ErrorResponse {
 
     private String errorMessage;
 

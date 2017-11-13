@@ -1,7 +1,6 @@
 package com.expercise.interpreterapi.docker;
 
 import com.expercise.interpreterapi.exception.InterpreterException;
-import com.expercise.interpreterapi.response.InterpretResponse;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerCertificateException;
@@ -10,28 +9,29 @@ import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
 import com.spotify.docker.client.messages.HostConfig;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Path;
 
-public abstract class DockerService {
+public abstract class InterpreterContainer {
 
     protected static final int STDOUT_BYTE_LIMIT = 1024;
     protected static final int STDERR_BYTE_LIMIT = 1024;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DockerService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(InterpreterContainer.class);
     private static final Long MEMORY_CONSTRAINT = 64 * 1024 * 1024L;
 
     protected final DockerClient docker;
 
-    public DockerService() throws DockerCertificateException, DockerException, InterruptedException {
+    public InterpreterContainer() throws DockerCertificateException, DockerException, InterruptedException {
         docker = DefaultDockerClient.fromEnv().build();
         docker.pull(getDockerImage().imageName());
     }
 
-    public InterpretResponse runContainer(Path hostPath, Path containerPath) {
+    public Response run(Path hostPath, Path containerPath) {
         HostConfig hostConfig = HostConfig.builder()
                 .appendBinds(HostConfig.Bind
                         .from(hostPath.toString())
@@ -61,7 +61,7 @@ public abstract class DockerService {
 
     protected abstract DockerImage getDockerImage();
 
-    protected abstract InterpretResponse execute(String containerId) throws DockerException, InterruptedException, IOException;
+    protected abstract Response execute(String containerId) throws DockerException, InterruptedException, IOException;
 
     private ContainerCreation startContainer(ContainerConfig containerConfig) {
         try {
@@ -82,6 +82,25 @@ public abstract class DockerService {
             docker.removeContainer(containerId);
         } catch (DockerException | InterruptedException e) {
             throw new InterpreterException("Interpreter exception occurred while destroying container.", e);
+        }
+    }
+
+    public static class Response {
+
+        private final String stdOut;
+        private final String stdErr;
+
+        public Response(String stdOut, String stdErr) {
+            this.stdOut = StringUtils.trim(stdOut);
+            this.stdErr = StringUtils.trim(stdErr);
+        }
+
+        public String getStdOut() {
+            return stdOut;
+        }
+
+        public String getStdErr() {
+            return stdErr;
         }
     }
 }

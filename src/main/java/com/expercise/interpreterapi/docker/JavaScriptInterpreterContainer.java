@@ -1,6 +1,5 @@
 package com.expercise.interpreterapi.docker;
 
-import com.expercise.interpreterapi.response.InterpretResponse;
 import com.expercise.interpreterapi.model.ProgrammingLanguage;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.LogStream;
@@ -14,19 +13,19 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 @Service
-public class Python2DockerService extends DockerService {
+public class JavaScriptInterpreterContainer extends InterpreterContainer {
 
-    public Python2DockerService() throws DockerCertificateException, DockerException, InterruptedException {
+    public JavaScriptInterpreterContainer() throws DockerCertificateException, DockerException, InterruptedException {
     }
 
     @Override
     protected DockerImage getDockerImage() {
-        return DockerImage.PYTHON_2;
+        return DockerImage.JAVASCRIPT;
     }
 
     @Override
-    public InterpretResponse execute(String containerId) throws DockerException, InterruptedException, IOException {
-        final String[] command = {"python", ProgrammingLanguage.Python2.getFileName()};
+    public InterpreterContainer.Response execute(String containerId) throws DockerException, InterruptedException, IOException {
+        final String[] command = {"node", ProgrammingLanguage.JavaScript.getFileName()};
         final ExecCreation execCreation = docker.execCreate(
                 containerId,
                 command,
@@ -37,6 +36,6 @@ public class Python2DockerService extends DockerService {
         OutputStream stdOut = new ContainerOutputThresholdingOutputStream(new ByteArrayOutputStream(), STDOUT_BYTE_LIMIT);
         OutputStream stdErr = new ContainerOutputThresholdingOutputStream(new ByteArrayOutputStream(), STDERR_BYTE_LIMIT);
         output.attach(stdOut, stdErr, true);
-        return new InterpretResponse(stdOut.toString(), stdErr.toString());
+        return new Response(stdOut.toString(), stdErr.toString());
     }
 }
