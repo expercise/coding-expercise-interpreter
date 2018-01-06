@@ -23,6 +23,8 @@
         <springfox-swagger-ui.version>2.7.0</springfox-swagger-ui.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <docker-client.version>8.9.1</docker-client.version>
+        <commons-collections4.version>4.0</commons-collections4.version>
         <java.version>1.8</java.version>
     </properties>
 
@@ -39,7 +41,7 @@
         <dependency>
             <groupId>com.spotify</groupId>
             <artifactId>docker-client</artifactId>
-            <version>8.9.1</version>
+            <version>${docker-client.version}</version>
         </dependency>
 
         <dependency>
@@ -57,7 +59,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.0</version>
+            <version>${commons-collections4.version}</version>
         </dependency>
 
         <dependency>
