@@ -85,10 +85,8 @@ public abstract class InterpreterContainer {
             if (containerInfo.state() != null) {
                 if (isTrue(containerInfo.state().oomKilled())) {
                     throw new InterpreterException("Container memory limit exceeded.");
-                } else if (containerInfo.state().exitCode() == 0) {
-                    LOGGER.info("Interpreter execution completed successfully on container with ID : {}", containerId);
                 } else {
-                    throw new InterpreterException("Code execution failed with unknown code.");
+                    LOGGER.info("Interpreter execution completed successfully on container with ID : {} ; containerInfo : {}", containerId, containerInfo);
                 }
             } else {
                 throw new InterpreterException("Code execution failed with unknown state.");
@@ -100,12 +98,24 @@ public abstract class InterpreterContainer {
 
     private void destroyContainer(String containerId) {
         try {
-            docker.killContainer(containerId);
+            killContainer(containerId);
             checkExecutionState(containerId);
-            docker.removeContainer(containerId);
+            removeContainer(containerId);
         } catch (DockerException | InterruptedException e) {
             throw new InterpreterException("Interpreter exception occurred while destroying container.", e);
         }
+    }
+
+    private void killContainer(String containerId) throws DockerException, InterruptedException {
+        LOGGER.debug("Killing container {}", containerId);
+        docker.killContainer(containerId);
+        LOGGER.debug("Killing container {}", containerId);
+    }
+
+    private void removeContainer(String containerId) throws DockerException, InterruptedException {
+        LOGGER.debug("Removing container {}", containerId);
+        docker.removeContainer(containerId);
+        LOGGER.debug("Removed container {}", containerId);
     }
 
     public static class Response {
