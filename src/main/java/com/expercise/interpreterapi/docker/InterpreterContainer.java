@@ -7,6 +7,7 @@ import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.ContainerConfig;
 import com.spotify.docker.client.messages.ContainerCreation;
+import com.spotify.docker.client.messages.ContainerInfo;
 import com.spotify.docker.client.messages.HostConfig;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -16,13 +17,15 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static org.apache.commons.lang.BooleanUtils.isTrue;
+
 public abstract class InterpreterContainer {
 
     protected static final int STDOUT_BYTE_LIMIT = 1024;
     protected static final int STDERR_BYTE_LIMIT = 1024;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InterpreterContainer.class);
-    private static final Long MEMORY_CONSTRAINT = 64 * 1024 * 1024L;
+    private static final Long MEMORY_CONSTRAINT = 32 * 1024 * 1024L;
 
     protected final DockerClient docker;
 
@@ -76,9 +79,29 @@ public abstract class InterpreterContainer {
         }
     }
 
+    private void checkExecutionState(String containerId) {
+        try {
+            ContainerInfo containerInfo = docker.inspectContainer(containerId);
+            if (containerInfo.state() != null) {
+                if (isTrue(containerInfo.state().oomKilled())) {
+                    throw new InterpreterException("Container memory limit exceeded.");
+                } else if (containerInfo.state().exitCode() == 0) {
+                    LOGGER.info("Interpreter execution completed successfully on container with ID : {}", containerId);
+                } else {
+                    throw new InterpreterException("Code execution failed with unknown code.");
+                }
+            } else {
+                throw new InterpreterException("Code execution failed with unknown state.");
+            }
+        } catch (DockerException | InterruptedException e) {
+            throw new InterpreterException("Error occurred while checking after execution state.");
+        }
+    }
+
     private void destroyContainer(String containerId) {
         try {
             docker.killContainer(containerId);
+            checkExecutionState(containerId);
             docker.removeContainer(containerId);
         } catch (DockerException | InterruptedException e) {
             throw new InterpreterException("Interpreter exception occurred while destroying container.", e);
