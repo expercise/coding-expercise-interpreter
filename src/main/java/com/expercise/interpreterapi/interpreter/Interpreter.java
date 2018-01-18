@@ -63,16 +63,8 @@ public class Interpreter {
             return sourceCode;
         }
 
-        public void setSourceCode(String sourceCode) {
-            this.sourceCode = sourceCode;
-        }
-
         public String getProgrammingLanguage() {
             return programmingLanguage;
-        }
-
-        public void setProgrammingLanguage(String programmingLanguage) {
-            this.programmingLanguage = programmingLanguage;
         }
 
         @Override
