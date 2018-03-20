@@ -107,15 +107,15 @@ public abstract class InterpreterContainer {
     }
 
     private void killContainer(String containerId) throws DockerException, InterruptedException {
-        LOGGER.debug("Killing container {}", containerId);
+        LOGGER.debug("Killing container. ContainerId : {}", containerId);
         docker.killContainer(containerId);
-        LOGGER.debug("Killing container {}", containerId);
+        LOGGER.debug("Container killed. ContainerId : {}", containerId);
     }
 
     private void removeContainer(String containerId) throws DockerException, InterruptedException {
-        LOGGER.debug("Removing container {}", containerId);
+        LOGGER.debug("Removing container. ContainerId : {}", containerId);
         docker.removeContainer(containerId);
-        LOGGER.debug("Removed container {}", containerId);
+        LOGGER.debug("Container removed. ContainerId : {}", containerId);
     }
 
     public static class Response {
