@@ -31,7 +31,7 @@ public class MessageBundle {
     }
 
     public String getMessage(String[] codes) {
-        for(String code : codes) {
+        for (String code : codes) {
             try {
                 return getMessage(code);
             } catch (NoSuchMessageException ignored) {

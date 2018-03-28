@@ -21,11 +21,13 @@ import static org.apache.commons.lang.BooleanUtils.isTrue;
 
 public abstract class InterpreterContainer {
 
-    protected static final int STDOUT_BYTE_LIMIT = 1024;
-    protected static final int STDERR_BYTE_LIMIT = 1024;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(InterpreterContainer.class);
+
     private static final Long MEMORY_CONSTRAINT = 32 * 1024 * 1024L;
+
+    protected static final int STDOUT_BYTE_LIMIT = 1024;
+
+    protected static final int STDERR_BYTE_LIMIT = 1024;
 
     protected final DockerClient docker;
 

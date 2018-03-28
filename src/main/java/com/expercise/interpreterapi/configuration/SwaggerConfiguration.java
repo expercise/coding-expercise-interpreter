@@ -23,24 +23,24 @@ public class SwaggerConfiguration {
 
     @Bean
     public Docket interpreterApiDocket() {
-        return new Docket(DocumentationType.SWAGGER_2).host(host)
+        return new Docket(DocumentationType.SWAGGER_2)
+                .host(host)
                 .select()
                 .apis(Predicates.not(RequestHandlerSelectors.basePackage("org.springframework")))
                 .paths(PathSelectors.any())
                 .build()
-                .apiInfo(apiInfo())
-                ;
+                .apiInfo(apiInfo());
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "Coding Expercise Interpreter API",
-                "",
-                "v1",
-                "",
-                new Contact("Expercise Team", "http://expercise.com", "expercise@gmail.com"),
-                ".",
-                ".",
+                null,
+                "1.0.0",
+                null,
+                new Contact("expercise Labs", "https://expercise.com", "expercise@gmail.com"),
+                null,
+                null,
                 Collections.emptyList()
         );
     }

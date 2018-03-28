@@ -40,7 +40,7 @@ public class InterpreterController {
         ErrorResponse response = new ErrorResponse();
         response.setErrorMessage(exception.getMessage());
 
-        LOGGER.error("Interpreter exception: {}", exception);
+        LOGGER.error("Interpreter error: ", exception);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
@@ -50,7 +50,7 @@ public class InterpreterController {
         ErrorResponse response = new ErrorResponse();
         response.setErrorMessage(messageBundle.getMessage(exception.getBindingResult().getFieldError().getCodes()));
 
-        LOGGER.error("MethodArgumentNotValid exception: {}", exception);
+        LOGGER.error("Invalid method argument: ", exception);
 
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
