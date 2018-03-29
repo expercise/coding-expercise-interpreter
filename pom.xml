@@ -5,11 +5,11 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.expercise</groupId>
-    <artifactId>expercise-interpreter</artifactId>
+    <groupId>com.expercise.coding</groupId>
+    <artifactId>coding-expercise-interpreter</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0</version>
-    <name>expercise-interpreter</name>
+    <name>coding-expercise-interpreter</name>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
